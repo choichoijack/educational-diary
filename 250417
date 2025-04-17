@@ -1,0 +1,416 @@
+⦁ 2025년 04월 17일(목)
+⦁ 단원명 : JavaScript(core)
+⦁ 학습 주제 : 
+  function(함수), scope, object-constructor(객체 생서자), prototype
+⦁ 학습 내용 : 
+- function(함수)
+  1-1. function declaration(함수 선언문)
+function hello(name) {    
+	return `${name}님 안녕하세요!`;
+}
+
+  1-2. function expression(함수 표현식)
+var hello = function (name) {    
+	return `${name}님 안녕하세요!`;
+}
+
+  1-3. function hoisting (함수 호이스팅)
+console.log(hello('홍길동'));
+console.log(hi('홍길동'));
+
+// 함수 선언문
+function hello(name) {
+    return `${name}님 안녕하세요!`;
+}
+
+// 함수 표현식
+var hi = function(name) {
+    return `${name}님 안녕`;
+}
+
+  2-1. function call(함수 호출)
+/* 01_매개변수와 인수 */
+
+function hello(name) {
+
+    // 매개변수는 함수 몸체 내부에서만 참조할 수 있다.
+    console.log(name);
+
+    return `${name}님 안녕하세요!`;
+}
+
+// console.log(name);  불가능
+
+// 함수 호출
+var result = hello('홍길동');
+console.log(`result1 : ${result}`);
+
+// 인수가 부족해서 할당되지 않은 매개변수의 값은 undefined이다.
+result = hello();
+console.log(`result2 : ${result}`);
+
+// 인수가 더 많은 경우 초과된 인수는 무시된다.
+result = hello('홍길동', '유관순');
+console.log(`result3 : ${result}`);
+
+function hi(name = '아무개') {
+    return `${name} 안녕`;
+}
+
+// 매개변수 기본값 활용
+result = hi();
+console.log(`result4 : ${result}`);
+
+  2-2. return(반환문)
+/* 02_반환문 */
+
+function hello(name) {
+
+    return `${name}님 안녕하세요!`;
+    
+    // 반환문 이후의 문은 실행되지 않고 무시된다.
+    console.log(name);
+}
+
+console.log(hello('유관순'));
+
+function func() {
+
+    // 반환 값을 명시적으로 지정하지 않으면 undefined가 반한된다.
+    return; // 생략 가능
+}
+
+console.log(func());
+
+  3-1. arrow function(화살표 함수)
+var message;
+
+// 기존 함수 정의
+message = function() {
+    return 'hello world';
+}
+
+console.log(message());
+
+// function 생략 가능
+message = () => {
+    return 'Arrow Function!';
+}
+
+// 명령문이 하나만 있는 경우 중괄호, return 생략 가능
+message = () => "Arrow Functions are Simple";
+
+console.log(message());
+
+// 매개변수 있을 경우
+message = (val1, val2) => `arrow function : ${val1 + val2}`;
+
+console.log(message(10, 20));
+
+// 매개변수가 하나면 소괄호 생략 가능
+message = value => `hello${value}`;
+
+console.log(message('world'));
+
+  4-1. various type of functions(다양한 타입의 함수)
+      - immediately invoked function expression(즉시 실행 함수)
+(function() {    
+	console.log('익명 즉시 실행 함수! 함수 정의와 동시에 호출!');
+})();
+
+      - recursive function(재귀 함수)
+function factorial(n) {    
+// n이 1 이하일 때 재귀 호출을 멈춘다.    
+	if(n <= 1) return 1;    // 재귀 호출    
+	return n * factorial(n - 1);
+}
+
+      -  nested function(중첩 함수)
+function outer() {    
+	var outerVal = '외부 함수';    
+function inner() {        
+	var innerVal = '내부 함수';        // 외부 함수의 변수를 참조할 수 있다.        
+	console.log(outerVal, innerVal);    
+	}    
+	inner();
+}
+outer();
+
+      - callback function(콜백 함수)
+// 전달 받은 값을 증가 시켜주는 함수
+function increase (value) {    
+	return value + 1;
+}
+// 전달 받은 값을 감소 시켜주는 함수
+function decrease (value) {    
+	return value - 1;
+}
+// 전달 받은 함수에 전달 받은 값을 적용 시켜주는 고차 함수
+function apply(func, value) {    
+// 고차 함수는 매개변수를 통해 전달 받을 콜백 함수의 호출 시점을 결정해서 호출한다.    
+// 콜백 함수는 고차 함수에 의해 호출되며 이때 고차 함수는 필요에 따라 콜백함수에 인수를 전달할 수 있다.    
+	return func(value);
+}
+// 고차 함수로 콜백 함수를 전달하며 호출
+console.log(apply(increase, 5));
+console.log(apply(decrease, 5));
+
+- scope
+  1-1. global and local scope (전역과 지역 스코프)
+/* 01_전역과 지역 스코프 */
+
+var x = 'global x';
+var y = 'global y';
+
+function outer() {
+
+    var z = "outer local z";
+
+    console.log(x);
+    console.log(y);
+    console.log(z);
+
+    function inner() {
+
+        var x = "inner local x";
+
+        console.log(x);
+        console.log(y);
+        console.log(z);
+    }
+
+    inner();
+}
+
+outer();
+
+console.log(x);
+// console.log(z);
+
+  1-2. function level scope (함수 레벨 스코프)
+/* 02_함수 레벨 스코프 */
+var i = 0;
+
+// for 코드 블록 내부에서 i라는 변수를 선언한다.
+// 이는 전역 변수로 이미 선언 된 전역 변수 i가 있어 중복 선언된다.
+for(var i = 0; i < 10; i++) {
+
+}
+
+console.log(i); // 의도와 달리 for 코드 블록 내부에서의 값 변화가 반영된다.
+
+  2. let and const
+  2-1. var
+/* 01_var */
+
+// 1. 변수 중복 선언 허용
+var msg = '안녕하세요';
+console.log(msg);
+
+// 자바스크립트 엔진에 의해 초기화된다.
+var msg = '안녕히가세요';
+console.log(msg);
+
+var msg;
+console.log(msg);
+
+// 2. 함수레벨 스코프 - 앞에서 봤음
+
+// 3. 변수 호이스팅
+console.log(test);
+var test = '반갑습니다';
+console.log(test);
+
+var test;
+console.log(test);
+test = '반갑습니다';
+console.log(test);
+
+  2-2. let
+/* 02_let */
+
+// 1. 변수 중복 선언 금지
+let msg = '안녕하세요';
+// let msg = '안녕하세요';  // 같은 스코프 내에서 중복 선언 금지
+
+// 2. 블록 레벨 스코프
+// let 키워드로 선언한 변수는 모든 코드 블록(for문, if문, 함수, 등...)을 지역 스코프로 인정한다.
+let i = 0;
+for(let i = 0; i < 10; i++) {
+    console.log(`지역 변수 i : ${i}`);
+}
+console.log(`전역 변수 : ${i}`);
+
+  2-3. const
+/* 03_const 
+const 키워드는 상수를 선언하기 위해 사용한다.
+*/
+
+// const 키워드로 선언한 변수는 반드시 선언과 동시에 초기화 해야한다.
+const x = 1;
+
+// x = 2;  // 재할당 금지
+
+/* 상수 : 재할당이 금지된 변수 
+const 키워드에 의해 재할당이 금지되므로 할당된 값을 변경할 수 있는 방법은 없다.
+일반적으로 상수의 이름은 대문자로 선언해 상수임을 명확히 나타내며
+여러 단어로 이루어진 경우 언더스코어(_)로 구분해서 스네이크 케이스로 표현하는 것이 일반적이다.
+*/
+
+const DISCOUNT_RATE = 0.15;
+
+const price = 15000;    // 정가
+const discountPrice = price * (1 - DISCOUNT_RATE);  // 할인가
+console.log(discountPrice);
+
+// const 키워드로 선언 된 변수에 객체를 할당한 경우 값을 변경할 수 있다.
+const student = {
+    name : '홍길동',
+    age : 20
+};
+student.name = '유관순';    // 안에 있는 프로퍼티 값은 바꿀 수 있다.
+console.log(student);
+
+// student = {};   // 객체 자체에 재할당은 불가하다.
+
+- Object constructor function (객체 생성자 함수)
+  1-1. Object constructor function
+/* 01_객체 생성자 함수 
+new 연산자 함께 Object 생성자 함수를 호출하면 빈 객체를 생성하여 반환한다.
+빈 객체 생성 이후 프로퍼티 또는 메소드를 추가하여 객체를 완성할 수 있다.
+*/
+
+// 빈 객체 생성
+const student = new Object();
+
+// 동적으로 프로퍼티 추가
+student.name = "홍길동";
+student.age = 16;
+
+console.log(student);
+
+  1-2. constructor function (생성자 함수)
+/* 02_생성자 함수 */
+
+// 객체 리터럴
+const student1 = {
+    name : '유관순',
+    age : 16,
+    getInfo : function() {
+        return `${this.name}(은)는 ${this.age}세입니다.`;
+    }
+};
+
+const student2 = {
+    name : '홍길동',
+    age : 20,
+    getInfo : function() {
+        return `${this.name}(은)는 ${this.age}세입니다.`;
+    }
+};
+
+// 생성자 함수에 의한 객체 생성 -> 동일한 객체 여러 개 간편하게 생성할 수 있다.
+function Student(name, age) {
+
+    // 생성자 함수 내부의 this는 생성자 함수가 생성할 인스턴스를 가리킨다.
+    this.name = name;
+    this.age = age;
+    this.getInfo = function() {
+        return `${this.name}(은)는 ${this.age}세입니다.`;
+    }
+}
+
+const student3 = new Student('장보고', 30);
+const student4 = new Student('신사임당', 40);
+
+// 메소드 호출
+console.log(student3.getInfo());
+console.log(student4.getInfo());
+
+- prototype
+  1. inheritance (상속)
+  1-1. [[Prototype]]
+/* [[ Prototype ]] : 자바스크립트의 객체는 [[Prototype]]이라는 숨김 프로퍼티를 갖는다. 
+                            이 프로퍼티 값은 null이거나 다른 객체에 대한 참조가 되는데,
+                            다른 객체에 참조하는 경우 참조 대상을 프로토타입(prototype)이라 부른다.
+*/
+
+const user = {
+    activate : true,
+    login : function() {
+        console.log('로그인 되었습니다.');
+    }
+};
+
+const student = {
+    passion : true
+};
+
+student.__proto__ = user;
+console.log(student.activate);
+student.login();
+console.log(student.passion);
+
+// 프로토타입 체인
+const ohgiraffersStudent = {
+    class : 11,
+    __proto__ : student
+};
+
+console.log(ohgiraffersStudent.activate);   // user에서 상속
+console.log(ohgiraffersStudent.passion);    // student에서 상속
+
+// 프로토타입 체이닝은 순환 참조가 허용되지 않는다.
+// __proto__ 의 값은 객체 또는 null만 가능하며 다른 자료형은 무시된다.
+
+1-2. prototype-feature
+/* 프로토타입 특징 */
+const user = {
+    id : 'user',
+    login : function() {
+        console.log(`${this.id}님 로그인 되었습니다.`);
+    }
+};
+
+const student = {
+    __proto__ : user
+};
+
+student.id = 'user01';
+// 메소드는 공유되지만 객체의 상태는 공유되지 않는다.
+student.login();
+
+for(let prop in student) {
+    // for in 반복문은 상속 프로퍼티도 순회 대상에 포함시킨다.
+    console.log(prop);
+
+    let isOwn = student.hasOwnProperty(prop);
+
+    if(isOwn) {
+        console.log(`객체 자신의 프로퍼티 ${prop}`);
+    } else {
+        console.log(`상속 프로퍼티 ${prop}`);
+    }
+
+}
+
+  2. function prototype (함수 프로토타입)
+  2-1. object constructor prototype (생성자 함수 프로토타입)
+/* 생성자 함수 프로토타입 */
+// new 연산자를 사용해 만든 객체는 생성자 함수의 프로토타입 정보를 사용해 [[Prototype]]을 설정한다.
+
+const user = {
+    activate : true,
+    login : function() {
+        console.log('로그인 되었습니다.');
+    }
+};
+
+function Student(name) {
+    this.name = name;
+}
+
+Student.prototype = user;
+
+const student = new Student('홍길동');
+console.log(student.activate);
